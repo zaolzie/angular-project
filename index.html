@@ -1,0 +1,74 @@
+<!doctype html>
+<html ng-app="cPanel">
+    <head>
+        <meta charset="utf-8">
+        <menta name="viewport" content="width=device-width">
+        <title>Football Players Manager</title>
+        <link rel="stylesheet" href="assets/css/normalize.css">
+        <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/animations.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+    </head>
+    <body ng-controller="MainCtrl">
+        <div class="container-fluid">
+            <div >
+                <div class="row" >
+                    <div class="col-sm-3 col-md-2 sidebar">
+                        <a href="#" ng-click="setCurrentClub(null)"><img class="logo" src="assets/img/agh.jpg"></a>
+                        <ul class="nav nav-sidebar">
+                            <li ng-repeat="club in clubs" ng-class="{'active':isCurrentClub(club)}">
+                                <a href="#" ng-click="setCurrentClub(club)">{{club.name}}</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <div >
+                    <div ng-repeat="player in players | filter:{club:currentClub.name}">
+                        <button type="button" class="close">&times;</button>
+                        <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
+                        <a href="{{player.url}}" target="_blank">{{player.name}} - {{player.position}}</a>
+                    </div>
+                </div>
+                <!-- CREATING PLAYER -->
+                <div ng-if="shouldShowCreatingPlayer()">
+                    <button type="button" class="btn btn-link" ng-click="startCreatingPlayer()">
+                        <span class="glyphicon glyphicon-plus"></span>
+                        Dodaj
+                    </button>
+                    <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="createPlayer(newPlayer)" novalidate>
+                        <div class="form-group">
+                            <label for="newName">Imię i nazwisko</label>
+                            <input type="text" class="form-control" id="newPlayerName" ng-model="newPlayer.name" placeholder="Imię i nazwisko ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPlayerURL">Link do profilu zawodnika</label>
+                            <input type="text" class="form-control" id="newPlayerURL" ng-model="newPlayer.url" placeholder="Link do profilu ...">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="newPlayerPosition">Pozycja na boisku</label>
+                            <input type="text" class="form-control" id="newPlayerPosition" ng-model="newPlayer.position" placeholder="Pozycja na boisku ...">
+                        </div>
+                        
+                        <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
+                        <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelCreatingPlayer()">Anuluj</button>
+                    </form>
+                </div>
+                <!-- EDITING PLAYER -->
+                <div ng-if="shouldShowEditingPlayer()">
+                    Edytuj zawodnika!
+                    <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+        <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+        <script type="text/javascript" src="assets/js/config.js"></script>
+        <script type="text/javascript" src="assets/js/controllers/controller.js"></script>
+        
+    </body>
+</html>
