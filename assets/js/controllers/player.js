@@ -83,14 +83,10 @@ myApp.controller("playerCtrl", function($scope, Player) {
           };
          }
 
-      //-------------------------------------------------------------------------------------------------
-      // CRUD
-      //-------------------------------------------------------------------------------------------------
-      
+
       
       $scope.editedPlayer = null;
-      $scope.editedPlayerId = null;
-      
+
       function setEditedPlayer(player){
           $scope.editedPlayer = angular.copy(player);
       }
