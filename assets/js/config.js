@@ -1,5 +1,3 @@
-//var myApp = angular.module("cPanel", ["firebase"]);
-
 var myApp = angular.module("cPanel", ["ui.router", "firebase"]);
 
 myApp.constant('FIREBASE_URI', "https://angular-zti.firebaseio.com/");
