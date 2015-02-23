@@ -110,3 +110,8 @@ a:hover {
 .create-form, .edit-form {
     padding: 20px;
 }
+
+
+.nav > li > a {
+    display:inline;
+}

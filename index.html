@@ -9,66 +9,89 @@
         <link rel="stylesheet" href="assets/css/animations.css">
         <link rel="stylesheet" href="assets/css/style.css">
     </head>
-    <body ng-controller="MainCtrl">
+    <body ng-controller="clubCtrl">
         <div class="container-fluid">
-            <div >
                 <div class="row" >
                     <div class="col-sm-3 col-md-2 sidebar">
                         <a href="#" ng-click="setCurrentClub(null)"><img class="logo" src="assets/img/agh.jpg"></a>
                         <ul class="nav nav-sidebar">
                             <li ng-repeat="club in clubs" ng-class="{'active':isCurrentClub(club)}">
+                                <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
                                 <a href="#" ng-click="setCurrentClub(club)">{{club.name}}</a>
                             </li>
                         </ul>
+                        <form class="create-form" role="form" ng-submit="addClub(name)" novalidate>
+                                <div class="form-group">
+                                    <label for="newClubName">Nazwa Klubu</label>
+                                    <input type="text" class="form-control" id="newClubName" ng-model="name" placeholder="Nazwa klubu">
+                                </div>
+                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
+                        </form>
+                    </div>
+                </div>
+            
+            
+                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                    <div ng-controller="playerCtrl">
+                        <div ng-repeat="player in players | filter:{club:currentClub.name}">
+                            <button type="button" class="close">&times;</button>
+                            <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
+                            <a href="{{player.url}}" target="_blank">{{player.name}} - {{player.position}}</a>
+                        </div>
+                   
+                        <!-- CREATING PLAYER -->
+                        <div ng-if="shouldShowCreatingPlayer()">
+                            <button type="button" class="btn btn-link" ng-click="startCreatingPlayer()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Dodaj
+                            </button>
+                            <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="addPlayer(name,url,position,club)" novalidate>
+                                <div class="form-group">
+                                    <label for="newPlayerName">Imię i nazwisko</label>
+                                    <input type="text" class="form-control" id="newPlayerName" ng-model="name" placeholder="Imię i nazwisko ...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPlayerURL">Link do profilu zawodnika</label>
+                                    <input type="text" class="form-control" id="newPlayerURL" ng-model="url" placeholder="Link do profilu ...">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="newPlayerPosition">Pozycja na boisku</label>
+                                    <select class="form-control" id="newPlayerPosition" ng-model="position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
+                                        <option value="">Wybierz pozycję</option>
+                                    </select>
+                                </div> 
+                                <div class="form-group">
+                                    <label for="newPlayerClub">Klub</label>
+                                    <select class="form-control" ng-model="club"  id="newPlayerClub" ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
+                                        <option value="">Wybierz klub</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
+                                <button type="button" id="cancelPlayer" class="btn btn-default btn-lg pull-right" ng-click="cancelCreatingPlayer()">Anuluj</button>
+                            </form>
+                        </div>
+                        <!-- EDITING PLAYER -->
+                        <div ng-if="shouldShowEditingPlayer()">
+                            Edytuj zawodnika!
+                            <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                <div >
-                    <div ng-repeat="player in players | filter:{club:currentClub.name}">
-                        <button type="button" class="close">&times;</button>
-                        <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
-                        <a href="{{player.url}}" target="_blank">{{player.name}} - {{player.position}}</a>
-                    </div>
-                </div>
-                <!-- CREATING PLAYER -->
-                <div ng-if="shouldShowCreatingPlayer()">
-                    <button type="button" class="btn btn-link" ng-click="startCreatingPlayer()">
-                        <span class="glyphicon glyphicon-plus"></span>
-                        Dodaj
-                    </button>
-                    <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="createPlayer(newPlayer)" novalidate>
-                        <div class="form-group">
-                            <label for="newName">Imię i nazwisko</label>
-                            <input type="text" class="form-control" id="newPlayerName" ng-model="newPlayer.name" placeholder="Imię i nazwisko ...">
-                        </div>
-                        <div class="form-group">
-                            <label for="newPlayerURL">Link do profilu zawodnika</label>
-                            <input type="text" class="form-control" id="newPlayerURL" ng-model="newPlayer.url" placeholder="Link do profilu ...">
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="newPlayerPosition">Pozycja na boisku</label>
-                            <input type="text" class="form-control" id="newPlayerPosition" ng-model="newPlayer.position" placeholder="Pozycja na boisku ...">
-                        </div>
-                        
-                        <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
-                        <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelCreatingPlayer()">Anuluj</button>
-                    </form>
-                </div>
-                <!-- EDITING PLAYER -->
-                <div ng-if="shouldShowEditingPlayer()">
-                    Edytuj zawodnika!
-                    <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
-                </div>
-            </div>
-        </div>
+        
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
         <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+        <script src="https://cdn.firebase.com/js/client/2.1.2/firebase.js"></script>
+        <script src="https://cdn.firebase.com/libs/angularfire/0.9.2/angularfire.min.js"></script>
         <script type="text/javascript" src="assets/js/config.js"></script>
-        <script type="text/javascript" src="assets/js/controllers/controller.js"></script>
+        <script type="text/javascript" src="assets/js/controllers/club.js"></script>
+        <script type="text/javascript" src="assets/js/factories/club_factory.js"></script>
+        <script type="text/javascript" src="assets/js/controllers/play.js"></script>
+        <script type="text/javascript" src="assets/js/factories/player_factory.js"></script>
         
     </body>
 </html>
