@@ -24,8 +24,6 @@ myApp.factory("Player", function($firebase, FIREBASE_URI) {
     
     var updatePlayer = function (player) {
         
-        console.log(player);
-        
         // Get the Firebase reference of the item
         var itemRef = new  Firebase(FIREBASE_URI + "/player/" + player.$id);
 

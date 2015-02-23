@@ -12,97 +12,41 @@
     <body ng-controller="clubCtrl">
         <div class="container-fluid">
                 <div class="row" >
-                    <div class="col-sm-3 col-md-2 sidebar">
-                        <a href="#" ng-click="setCurrentClub(null)"><img class="logo" src="assets/img/agh.jpg"></a>
+                    <div class="col-sm-3 col-md-3 sidebar">
+                        <a ui-sref="home" ng-click="setCurrentClub(null)"><img class="logo" src="assets/img/logo.png"></a>
                         <ul class="nav nav-sidebar">
-                            <li ng-repeat="club in clubs" ng-class="{'active':isCurrentClub(club)}">
-                                <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
-                                <a href="#" ng-click="setCurrentClub(club)">{{club.name}}</a>
+                            <li ng-repeat="club in clubs" >
+                                <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="setEditedClub(club);startEditingClub();setCurrentClub(club)"></span></button>
+                                <button type="button" ng-click="removeClub(club)" class="close" style="color:#D5DBD8;margin-right:10px">&times;</button>
+                                <a ui-sref="players" ng-class="{'active':isCurrentClub(club)}" ng-click="setCurrentClub(club)">{{club.name}}</a>
                             </li>
                         </ul>
-                        <form class="create-form" role="form" ng-submit="addClub(name)" novalidate>
+                        <button type="button" class="btn btn-link" ng-click="startCreatingClub()">
+                                <span class="glyphicon glyphicon-plus"></span>
+                                Dodaj klub
+                        </button>
+                        <form class="create-form" ng-show="isCreatingClub" role="form" ng-submit="addClub(newClub)" novalidate>
                                 <div class="form-group">
                                     <label for="newClubName">Nazwa Klubu</label>
-                                    <input type="text" class="form-control" id="newClubName" ng-model="name" placeholder="Nazwa klubu">
+                                    <input type="text" class="form-control" id="newClubName" ng-model="newClub.name" placeholder="Nazwa klubu">
                                 </div>
-                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
+                                <button type="submit" class="btn btn-info btn-lg">Dodaj</button>
+                                <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelCreatingClub()">Anuluj</button>
+                        </form>
+                        <form class="create-form" ng-show="isEditingClub" role="form" ng-submit="updateClub(editedClub)" novalidate>
+                                <div class="form-group">
+                                    <label for="newClubName">Nazwa Klubu</label>
+                                    <input type="text" class="form-control" id="newClubName" ng-model="editedClub.name" placeholder="Nazwa klubu">
+                                </div>
+                                <button type="submit" class="btn btn-info btn-lg">Aktualizuj</button>
+                                <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingClub()">Anuluj</button>
                         </form>
                     </div>
                 </div>
             
             
-                <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-                    <div ng-controller="playerCtrl">
-                        <div ng-repeat="(id,player) in players | filter:{club:currentClub.name}">
-                            <button type="button" ng-click="removePlayer(player)" class="close">&times;</button>
-                            <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="setEditedPlayer(player);startEditingPlayer()"></span></button>
-                            <a href="{{player.url}}" target="_blank">{{player.name}} - {{player.position}}</a>
-                        </div>
-                   
-                        <!-- CREATING PLAYER -->
-                        <div ng-if="shouldShowCreatingPlayer()">
-                            <button type="button" class="btn btn-link" ng-click="startCreatingPlayer()">
-                                <span class="glyphicon glyphicon-plus"></span>
-                                Dodaj
-                            </button>
-                            <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="addPlayer(newPlayer)" novalidate>
-                                <div class="form-group">
-                                    <label for="newPlayerName">Imię i nazwisko</label>
-                                    <input type="text" class="form-control" id="newPlayerName" ng-model="newPlayer.name" placeholder="Imię i nazwisko ...">
-                                </div>
-                                <div class="form-group">
-                                    <label for="newPlayerURL">Link do profilu zawodnika</label>
-                                    <input type="text" class="form-control" id="newPlayerURL" ng-model="newPlayer.url" placeholder="Link do profilu ...">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="newPlayerPosition">Pozycja na boisku</label>
-                                    <select class="form-control" id="newPlayerPosition" ng-model="newPlayer.position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
-                                        <option value="">Wybierz pozycję</option>
-                                    </select>
-                                </div> 
-                                <div class="form-group">
-                                    <label for="newPlayerClub">Klub</label>
-                                    <select class="form-control" ng-model="newPlayer.club"  id="newPlayerClub" ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
-                                        <option value="">Wybierz klub</option>
-                                    </select>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
-                                <button type="button" id="cancelPlayer" class="btn btn-default btn-lg pull-right" ng-click="cancelCreatingPlayer()">Anuluj</button>
-                            </form>
-                        </div>
-                        <!-- EDITING PLAYER -->
-                        <div ng-if="shouldShowEditingPlayer()">
-                             <h4>Edycja {{editedPlayer.name}}</h4>
-                            <form class="create-form" ng-show="isEditingPlayer" role="form" ng-submit="updatePlayer(editedPlayer)" novalidate>
-                                <div class="form-group">
-                                    <label for="newPlayerName">Imię i nazwisko</label>
-                                    <input type="text" class="form-control" ng-model="editedPlayer.name" placeholder="Imię i nazwisko ...">
-                                </div>
-                                <div class="form-group">
-                                    <label for="newPlayerURL">Link do profilu zawodnika</label>
-                                    <input type="text" class="form-control" ng-model="editedPlayer.url" placeholder="Link do profilu ...">
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="newPlayerPosition">Pozycja na boisku</label>
-                                    <select class="form-control"ng-model="editedPlayer.position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
-                                        <option value="">Wybierz pozycję</option>
-                                    </select>
-                                </div> 
-                                <div class="form-group">
-                                    <label for="newPlayerClub">Klub</label>
-                                    <select class="form-control" ng-model="editedPlayer.club"  ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
-                                        <option value="">Wybierz klub</option>
-                                    </select>
-                                </div>
-                                
-                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
-                                <button type="button" id="cancelPlayer" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
-                            </form>
-                        </div>
-                    </div>
+                <div class="col-sm-9 col-sm-offset-3 col-md-9 col-md-offset-3 main">
+                    <div ui-view></div>
                 </div>
             </div>
         
@@ -110,6 +54,7 @@
         <script type="text/javascript" src="//netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
         <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.13/angular.min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.2.11/angular-ui-router.js"></script>
         <script src="https://cdn.firebase.com/js/client/2.1.2/firebase.js"></script>
         <script src="https://cdn.firebase.com/libs/angularfire/0.9.2/angularfire.min.js"></script>
         <script type="text/javascript" src="assets/js/config.js"></script>
