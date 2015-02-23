@@ -1,50 +1,67 @@
-myApp.controller('playerCtrl', function($scope,$rootScope){
-
-        $scope.players = [
-            {"id": 0, "name": "Paweł Brożek", "url": "http://www.90minut.pl/kariera.php?id=180", "club": "Wisła", "position": "Napastnik" },
-            {"id": 1, "name": "Arkadiusz Głowacki", "url": "http://www.90minut.pl/kariera.php?id=531", "club": "Wisła","position": "Obrońca" },
-            {"id": 2, "name": "Dawid Kownacki", "url": "http://www.90minut.pl/kariera.php?id=23132", "club": "Lech","position": "Napastnik" },
-            {"id": 3, "name": "Szymon Pawłowski", "url": "http://www.90minut.pl/kariera.php?id=7782", "club": "Lech","position": "Pomocnik" },
-            {"id": 4, "name": "Miroslav Radović", "url": "http://www.90minut.pl/kariera.php?id=7406", "club": "Legia","position": "Pomocnik" },
-            {"id": 5, "name": "Marek Saganowski", "url": "http://www.90minut.pl/kariera.php?id=1857", "club": "Legia","position": "Napastnik" },
-            {"id": 6, "name": "Grzegorz Kuświk", "url": "http://www.90minut.pl/kariera.php?id=8331", "club": "Ruch","position": "Napastnik" },
-            {"id": 7, "name": "Filip Starzyński", "url": "http://www.90minut.pl/kariera.php?id=14896", "club": "Ruch","position": "Pomocnik" },
-
-        ];
+myApp.controller("playerCtrl", function($scope, Player) {
+    $scope.players = Player.getPlayers();
+    
+    $scope.positions = [
+            { "name": "Bramkarz"},
+            { "name": "Obrońca"},
+            { "name": "Pomocnik"},
+            { "name": "Napastnik"}
+    ];
+    
+    
+    $scope.addPlayer = function(newPlayer) {
         
-       
+        Player.addPlayer(
+            {
+                name: newPlayer.name,
+                url: newPlayer.url,
+                position: newPlayer.position,
+                club: newPlayer.club
+            }
+        );
         
-        $rootScope.isCreatingPlayer = false;
-        $rootScope.isEditingPlayer = false;
+        resetCreateForm();
+    };
+    $scope.updatePlayer = function (player) {
+        
+        
+        Player.updatePlayer(player);
+    };
+
+    $scope.removePlayer = function (player) {
+        Player.removePlayer(player);
+    };
+    
+    $scope.isCreatingPlayer = false;
+        $scope.isEditingPlayer = false;
         
         
         function startCreatingPlayer() {
-             console.log($scope.players);
-              $rootScope.isCreatingPlayer = true;
-              $rootScope.isEditingPlayer = false;
+              $scope.isCreatingPlayer = true;
+              $scope.isEditingPlayer = false;
               resetCreateForm();
         }
 
         function cancelCreatingPlayer() {
-              $rootScope.isCreatingPlayer = false;
+              $scope.isCreatingPlayer = false;
         }
           
         function startEditingPlayer() {
-              $rootScope.isCreatingPlayer = false;
-              $rootScope.isEditingPlayer = true;
+              $scope.isCreatingPlayer = false;
+              $scope.isEditingPlayer = true;
         }
 
         function cancelEditingPlayer() {
-              $rootScope.isEditingPlayer = false;
+              $scope.isEditingPlayer = false;
               $scope.editedPlayer = null;
         }
         
         function shouldShowCreatingPlayer(){
-            return $rootScope.currentClub && !$rootScope.isEditingPlayer;
+            return $scope.currentClub && !$scope.isEditingPlayer;
         }
         
         function shouldShowEditingPlayer(){
-            return $rootScope.isEditingPlayer && !$rootScope.isCreatingPlayer;
+            return $scope.isEditingPlayer && !$scope.isCreatingPlayer;
         }
         
         
@@ -62,22 +79,26 @@ myApp.controller('playerCtrl', function($scope,$rootScope){
               name: '',
               url: '',
               position: '',
-              club: $rootScope.currentClub.name
+              club: ''
           };
          }
 
       //-------------------------------------------------------------------------------------------------
       // CRUD
       //-------------------------------------------------------------------------------------------------
-      function createPlayer(player) {
-          player.id = $scope.players.length;
-          $scope.players.push(player);
-
-          resetCreateForm();
+      
+      
+      $scope.editedPlayer = null;
+      $scope.editedPlayerId = null;
+      
+      function setEditedPlayer(player){
+          $scope.editedPlayer = angular.copy(player);
       }
+      
+      $scope.setEditedPlayer = setEditedPlayer;
+      
+      
+  
 
-      $scope.createPlayer = createPlayer;
-        
-
-        
+    
 });

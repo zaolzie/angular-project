@@ -33,9 +33,9 @@
             
                 <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                     <div ng-controller="playerCtrl">
-                        <div ng-repeat="player in players | filter:{club:currentClub.name}">
-                            <button type="button" class="close">&times;</button>
-                            <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="startEditingPlayer()"></span></button>
+                        <div ng-repeat="(id,player) in players | filter:{club:currentClub.name}">
+                            <button type="button" ng-click="removePlayer(player)" class="close">&times;</button>
+                            <button type="button" class="btn btn-link"><span class="glyphicon glyphicon-pencil" ng-click="setEditedPlayer(player);startEditingPlayer()"></span></button>
                             <a href="{{player.url}}" target="_blank">{{player.name}} - {{player.position}}</a>
                         </div>
                    
@@ -45,25 +45,25 @@
                                 <span class="glyphicon glyphicon-plus"></span>
                                 Dodaj
                             </button>
-                            <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="addPlayer(name,url,position,club)" novalidate>
+                            <form class="create-form" ng-show="isCreatingPlayer" role="form" ng-submit="addPlayer(newPlayer)" novalidate>
                                 <div class="form-group">
                                     <label for="newPlayerName">Imię i nazwisko</label>
-                                    <input type="text" class="form-control" id="newPlayerName" ng-model="name" placeholder="Imię i nazwisko ...">
+                                    <input type="text" class="form-control" id="newPlayerName" ng-model="newPlayer.name" placeholder="Imię i nazwisko ...">
                                 </div>
                                 <div class="form-group">
                                     <label for="newPlayerURL">Link do profilu zawodnika</label>
-                                    <input type="text" class="form-control" id="newPlayerURL" ng-model="url" placeholder="Link do profilu ...">
+                                    <input type="text" class="form-control" id="newPlayerURL" ng-model="newPlayer.url" placeholder="Link do profilu ...">
                                 </div>
                                 
                                 <div class="form-group">
                                     <label for="newPlayerPosition">Pozycja na boisku</label>
-                                    <select class="form-control" id="newPlayerPosition" ng-model="position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
+                                    <select class="form-control" id="newPlayerPosition" ng-model="newPlayer.position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
                                         <option value="">Wybierz pozycję</option>
                                     </select>
                                 </div> 
                                 <div class="form-group">
                                     <label for="newPlayerClub">Klub</label>
-                                    <select class="form-control" ng-model="club"  id="newPlayerClub" ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
+                                    <select class="form-control" ng-model="newPlayer.club"  id="newPlayerClub" ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
                                         <option value="">Wybierz klub</option>
                                     </select>
                                 </div>
@@ -74,8 +74,33 @@
                         </div>
                         <!-- EDITING PLAYER -->
                         <div ng-if="shouldShowEditingPlayer()">
-                            Edytuj zawodnika!
-                            <button type="button" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
+                             <h4>Edycja {{editedPlayer.name}}</h4>
+                            <form class="create-form" ng-show="isEditingPlayer" role="form" ng-submit="updatePlayer(editedPlayer)" novalidate>
+                                <div class="form-group">
+                                    <label for="newPlayerName">Imię i nazwisko</label>
+                                    <input type="text" class="form-control" ng-model="editedPlayer.name" placeholder="Imię i nazwisko ...">
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPlayerURL">Link do profilu zawodnika</label>
+                                    <input type="text" class="form-control" ng-model="editedPlayer.url" placeholder="Link do profilu ...">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="newPlayerPosition">Pozycja na boisku</label>
+                                    <select class="form-control"ng-model="editedPlayer.position" ng-options="value.name as value.name for value in positions" placeholder="Pozycja na boisku ...">
+                                        <option value="">Wybierz pozycję</option>
+                                    </select>
+                                </div> 
+                                <div class="form-group">
+                                    <label for="newPlayerClub">Klub</label>
+                                    <select class="form-control" ng-model="editedPlayer.club"  ng-options="value.name as value.name for value in clubs" ng-init="club='{{currentClub.name}}'" >
+                                        <option value="">Wybierz klub</option>
+                                    </select>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-info btn-lg">Zapisz</button>
+                                <button type="button" id="cancelPlayer" class="btn btn-default btn-lg pull-right" ng-click="cancelEditingPlayer()">Anuluj</button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -90,7 +115,7 @@
         <script type="text/javascript" src="assets/js/config.js"></script>
         <script type="text/javascript" src="assets/js/controllers/club.js"></script>
         <script type="text/javascript" src="assets/js/factories/club_factory.js"></script>
-        <script type="text/javascript" src="assets/js/controllers/play.js"></script>
+        <script type="text/javascript" src="assets/js/controllers/player.js"></script>
         <script type="text/javascript" src="assets/js/factories/player_factory.js"></script>
         
     </body>
